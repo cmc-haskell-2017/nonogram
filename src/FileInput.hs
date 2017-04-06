@@ -13,7 +13,7 @@ readFromFile st = Board
     , buttonPressed = False
     }
       where
-        ((x, y), (l1, l2)) = divideString (praseString(lines st))
+        ((x, y), (l1, l2)) = divideString (parseString(lines st))
             
 -- | Получить числа в той же структуре, в которой они были записаны в файле.            
 parseString :: [String] -> [[Int]]
