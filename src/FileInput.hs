@@ -1,7 +1,8 @@
 module FileInput(readFromFile) where
 
 import Types
-        
+
+-- | Функция, создающая игровое поле по содержимому файла.       
 readFromFile :: String -> Board
 readFromFile st = Board
     { fieldHeight = x
@@ -9,22 +10,26 @@ readFromFile st = Board
     , horizontal = l1
     , vertical = l2
     , field = replicate x (replicate y Nothing)
+    , buttonPressed = False
     }
       where
-        ((x, y), (l1, l2)) = parseString (pS1(lines st))
+        ((x, y), (l1, l2)) = divideString (praseString(lines st))
             
-            
-pS1 :: [String] -> [[Int]]
-pS1 = (map (map (\x -> read x :: Int))).(map words)         
-            
-parseString :: [[Int]] -> ((Int,Int), ([[Int]], [[Int]]))
-parseString lst = ((x, y), getLists (x,y) ss) 
+-- | Получить числа в той же структуре, в которой они были записаны в файле.            
+parseString :: [String] -> [[Int]]
+parseString = (map (map (\x -> read x :: Int))).(map words)         
+
+-- | Перевод списка чисел в удобное для разбора представление 
+-- (отделяем первые 2 числа, обозначающие размеры поля)             
+divideString :: [[Int]] -> ((Int,Int), ([[Int]], [[Int]]))
+divideString lst = ((x, y), getLists (x,y) ss) 
     where
       ss = tail lst 
       x = head (head lst) 
       y = head (tail (head lst))
        
-
+-- | По известным размерам поля делим список на числа, 
+-- расположенные по горизонтали и по вертикали.
 getLists :: (Int, Int) -> [[Int]] -> ([[Int]], [[Int]])
 getLists (0, 0) _ = ([[]], [[]])
 getLists (0, m) arr = ([[]], ((head arr):l2))
