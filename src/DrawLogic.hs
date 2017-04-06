@@ -16,7 +16,6 @@ drawField brd = do
 -- | Обработка событий.
 handleGame :: Event -> Board -> Board
 handleGame (EventKey (MouseButton LeftButton) Down _ mouse) brd = placeMark (mouseToCoord mouse brd) brd Y
---handleGame (EventMotion mouse) brd = placeMarkY (mouseToCoord mouse brd) brd
 handleGame (EventKey (MouseButton RightButton) Down _ mouse) brd = placeMark (mouseToCoord mouse brd) brd N
 handleGame _ brd = brd
 
