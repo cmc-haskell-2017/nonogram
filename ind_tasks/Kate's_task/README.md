@@ -1,8 +1,4 @@
-# project-template
-
-[![Build Status](https://travis-ci.org/cmc-haskell-2017/project-template.svg?branch=master)](https://travis-ci.org/cmc-haskell-2017/project-template)
-
-Шаблон проекта для выполнения практического задания.
+Версия базы, в которой клетки можно закрашивать движением мыши с зажатой левой кнопкой.
 
 ## Сборка и запуск
 
