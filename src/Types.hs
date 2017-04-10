@@ -7,6 +7,7 @@ data Board = Board
     , vertical :: [[Int]] -- цифры сверху от столбцов
     , fieldWidth :: Int -- ширина игрового поля в клетках
     , fieldHeight :: Int -- высота игрового поля в клетках
+    , buttonPressed :: Bool -- зажата ли левая кнопка мыши
     }
 
 -- | Фишки игроков.

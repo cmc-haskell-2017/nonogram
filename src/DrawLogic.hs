@@ -15,7 +15,9 @@ drawField brd = do
         
 -- | Обработка событий.
 handleGame :: Event -> Board -> Board
-handleGame (EventKey (MouseButton LeftButton) Down _ mouse) brd = placeMark (mouseToCoord mouse brd) brd Y
+handleGame (EventKey (MouseButton LeftButton) Down _ mouse) brd = (placeMark (mouseToCoord mouse brd) brd Y) {buttonPressed = True}
+handleGame (EventKey (MouseButton LeftButton) Up _ _) brd = brd {buttonPressed = False}
+handleGame (EventMotion mouse) brd = placeMarkY (mouseToCoord mouse brd) (buttonPressed brd) brd
 handleGame (EventKey (MouseButton RightButton) Down _ mouse) brd = placeMark (mouseToCoord mouse brd) brd N
 handleGame _ brd = brd
 
@@ -29,6 +31,17 @@ placeMark (i, j) brd m =
   where
     place Nothing = Just m
     place _  = Nothing
+    
+-- | Закрасить клетку (реакция на движение кнопки мыши).
+placeMarkY :: (Int, Int) -> Bool -> Board -> Board
+placeMarkY _ False brd = brd
+placeMarkY (i, j) True brd =
+  case modifyArr j (modifyList i place) (field brd) of
+      Nothing -> brd -- если поставить фишку нельзя, ничего не изменится
+      Just newBoard -> brd { field  = newBoard }
+  where
+    place _ = Just Y
+
 
 -- | Применить преобразование к элементу списка списков с заданным индексом.
 modifyArr :: Int -> (a -> Maybe a) -> [a] -> Maybe [a]

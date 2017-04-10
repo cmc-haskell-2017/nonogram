@@ -1,6 +1,22 @@
--- | Основная функция, переводящая псевдографический файл в список списков чисел.
-readDotFile :: String -> [[Int]]
-readDotFile str = map parseFile1 (lines str)
+module DotInput where 
+
+import Types
+
+-- | Основная функция, переводящая псевдографический файл в игровое поле.
+readDotFile :: String -> Board
+readDotFile str = Board 
+    { fieldHeight = x
+    , fieldWidth = y
+    , horizontal = getStrings (lines str)
+    , vertical = getStrings(getColumns (lines str))
+    , field = replicate x (replicate y Nothing)
+    , buttonPressed = False
+    }
+      where 
+        (x, y) = getSize (lines str)
+
+getStrings :: [String] -> [[Int]]
+getStrings strs = map parseFile1 strs
 
 -- | Перевод одной строки в список чисел. 
 parseFile1 :: String -> [Int]
@@ -36,6 +52,24 @@ cntX (n, str) | (head str == 'x') = cntX (n+1, tail str)
               | otherwise = (n, tail str)
 -}
 
+getColumns :: [String] -> [String]
+getColumns ([]:xs) = [[]]
+getColumns l = (getFirst l):(getColumns (getTail l))
+
+getSize :: [String] -> (Int, Int)
+getSize (l:ls) = ((length (l:ls)), (length l))
+
+-- | Список из первых элементов всех списков.                                      
+getFirst :: [[a]] -> [a]
+getFirst l | length l == 1 = (head (head l) : [])
+           | otherwise = head (head l) : getFirst (tail l)
+
+-- | Список из всех списков без их первых элементов.       
+getTail :: [[a]] -> [[a]]
+getTail l | length l == 1 = (tail (head l) : [])
+          | otherwise = tail (head l) : getTail (tail l)
+
+
 -- | Печать полученного представления файла в виде списка чисел.              
 printInts :: [[Int]] -> String
 printInts arr = unlines (map backToStr arr)               
@@ -44,7 +78,3 @@ printInts arr = unlines (map backToStr arr)
 backToStr :: [Int] -> String
 backToStr arr = foldMap (\x -> show x ++ " ") arr     
               
-main :: IO()
-main = do 
-    src <- readFile "dotfile.txt"
-    putStrLn(printInts (readDotFile src))
