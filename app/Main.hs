@@ -3,6 +3,7 @@ module Main where
 import DrawLogic
 import FileInput
 import DotInput
+import SolverInterface
 
 main :: IO ()
 main = do
