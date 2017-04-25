@@ -7,10 +7,11 @@ readFromFile :: String -> Board
 readFromFile st = Board
     { fieldHeight = x
     , fieldWidth = y
-    , horizontal = l1
-    , vertical = l2
+    , horizontal = tail(reverse l1)
+    , vertical = (reverse l2)
     , field = replicate x (replicate y Nothing)
     , buttonPressed = False
+    , difficulty = Nothing
     }
       where
         ((x, y), (l1, l2)) = divideString (parseString(lines st))

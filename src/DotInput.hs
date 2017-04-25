@@ -7,10 +7,11 @@ readDotFile :: String -> Board
 readDotFile str = Board 
     { fieldHeight = x
     , fieldWidth = y
-    , horizontal = getStrings (lines str)
-    , vertical = getStrings(getColumns (lines str))
+    , horizontal = reverse (getStrings (lines str))
+    , vertical = reverse (getStrings(getColumns (lines str)))
     , field = replicate x (replicate y Nothing)
     , buttonPressed = False
+    , difficulty = Nothing
     }
       where 
         (x, y) = getSize (lines str)

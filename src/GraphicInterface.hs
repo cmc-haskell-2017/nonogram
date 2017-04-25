@@ -61,15 +61,15 @@ drawGrid board = color black (pictures (hs ++ vs))
 drawNums :: Board -> Picture
 drawNums board = pictures (mappend drawHor drawVert)
   where
-    drawHor = foldMap drawHRow (zip [0..] (horizontal board))
-    drawVert = foldMap drawVRow (zip [0..] (vertical board))
+    drawHor = foldMap drawHRow (zip [0..] (reverse (horizontal board)))
+    drawVert = foldMap drawVRow (zip [0..] (reverse (vertical board)))
     drawHRow (j, row) = map drawHN (zip [0..] (reverse row))
      where
-        drawHN (i, num) = translate (0.5 + fromIntegral (screenSpace board) - i - 1) (0.2 + fromIntegral (fieldHeight board) - j - 1)
+        drawHN (i, num) = translate (0.3 + fromIntegral (screenSpace board) - i - 1) (0.2 + fromIntegral (fieldHeight board) - j - 1)
           (pictures [scale 0.004 0.004 $ color black $ text $ show num] )
     drawVRow (i, row) = map drawVN (zip [0..] (reverse row))
       where
-        drawVN (j, num) = translate (0.5 + fromIntegral (screenSpace board) + i) (0.2 + fromIntegral (fieldHeight board) + j)
+        drawVN (j, num) = translate (0.3 + fromIntegral (screenSpace board) + i) (0.2 + fromIntegral (fieldHeight board) + j)
           (pictures [scale 0.004 0.004 $ color black $ text $ show num] )
 
 
