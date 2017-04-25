@@ -21,7 +21,8 @@ autoSolve brd | ((changed new_brd) == False) || (isSolved (field (playBoard new_
       new_brd = checkCols 0 (checkRows 0 brd)
 
 countDifficulty :: SolveBoard -> Board
-countDifficulty brd | (changed brd) == False = (playBoard brd){difficulty = Nothing}
+countDifficulty brd | (difficulty (playBoard brd)) /= Nothing = (playBoard brd) 
+                    | (changed brd) == False = (playBoard brd){difficulty = Nothing}
                     | otherwise = (playBoard brd){difficulty = Just (solvingSteps brd)}
 
 -- | Проверка, всё ли поле заполнено.

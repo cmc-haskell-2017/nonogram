@@ -3,6 +3,7 @@ module DrawLogic where
 import Graphics.Gloss.Interface.Pure.Game
 import GraphicInterface
 import Types
+import SolverInterface
 
 drawField :: Board -> IO()
 drawField brd = do
@@ -19,6 +20,7 @@ handleGame (EventKey (MouseButton LeftButton) Down _ mouse) brd = (placeMark (mo
 handleGame (EventKey (MouseButton LeftButton) Up _ _) brd = brd {buttonPressed = False}
 handleGame (EventMotion mouse) brd = placeMarkY (mouseToCoord mouse brd) (buttonPressed brd) brd
 handleGame (EventKey (MouseButton RightButton) Down _ mouse) brd = placeMark (mouseToCoord mouse brd) brd N
+handleGame (EventKey (SpecialKey KeySpace) Down _ _) brd = startSolver brd
 handleGame _ brd = brd
 
 
