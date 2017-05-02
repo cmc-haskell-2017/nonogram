@@ -2,6 +2,7 @@ module GraphicInterface where
 -- Модуль, отвечающий за отрисовку.
 import Graphics.Gloss.Interface.Pure.Game
 import Types
+import Debug.Trace
 
 {-
 defaultGame = Board
@@ -38,11 +39,26 @@ drawGame board = translate (-w) (-h) (scale c c (pictures
   [ drawGrid board
   , drawBoard board
   , drawNums board
+  , drawMenu board
   ]))
   where
     c = fromIntegral cellSize
     w = fromIntegral (screenWidth board)  / 2
     h = fromIntegral (screenHeight board) / 2
+
+drawMenu :: Board -> Picture
+drawMenu board = color black (pictures 
+  [ line [(sw+2, sh-2), (sw+5, sh-2)]
+  , line [(sw+5, sh-2), (sw+5, sh-5)]
+  , line [(sw+5, sh-5), (sw+2, sh-5)]
+  , line [(sw+2, sh-5), (sw+2, sh-2)]
+  , translate (0.3 + sw+2) (0.2 + sh-5 ) (pictures [scale 0.004 0.004 $ color black $ text $ "AutoSolver"] )
+  ])
+  where
+    sw = fromIntegral((screenSpace board) + (fieldWidth board))
+    sh = fromIntegral((screenSpace board) + (fieldHeight board))
+    
+
 
 -- | Сетка игрового поля.
 drawGrid :: Board -> Picture

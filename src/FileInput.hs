@@ -1,6 +1,8 @@
 module FileInput(readFromFile) where
 
 import Types
+import Data.Time.Clock
+import Data.Time.LocalTime
 
 -- | Функция, создающая игровое поле по содержимому файла.       
 readFromFile :: String -> Board
@@ -12,10 +14,19 @@ readFromFile st = Board
     , field = replicate x (replicate y Nothing)
     , buttonPressed = False
     , difficulty = Nothing
+--    , startTime = getTime    
     }
       where
         ((x, y), (l1, l2)) = divideString (parseString(lines st))
-            
+
+{- 
+getTime :: TimeOfDay
+getTime = do
+   now <- getCurrentTime
+   timezone <- getCurrentTimeZone
+   return (localTimeOfDay $ utcToLocalTime timezone now)
+--   return (TimeOfDay hour min sec)
+-}            
 -- | Получить числа в той же структуре, в которой они были записаны в файле.            
 parseString :: [String] -> [[Int]]
 parseString = (map (map (\x -> read x :: Int))).(map words)         

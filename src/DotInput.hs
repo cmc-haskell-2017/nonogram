@@ -1,6 +1,9 @@
 module DotInput where 
 
 import Types
+import Data.Time.Clock
+import Data.Time.LocalTime
+
 
 -- | Основная функция, переводящая псевдографический файл в игровое поле.
 readDotFile :: String -> Board
@@ -12,9 +15,17 @@ readDotFile str = Board
     , field = replicate x (replicate y Nothing)
     , buttonPressed = False
     , difficulty = Nothing
+--    , startTime = getTime      
     }
       where 
         (x, y) = getSize (lines str)
+{-
+getTime :: TimeOfDay
+getTime = do
+    now <- getCurrentTime
+    timezone <- getCurrentTimeZone
+    let (TimeOfDay hour minute second) = localTimeOfDay $ utcToLocalTime timezone now 
+-}
 
 getStrings :: [String] -> [[Int]]
 getStrings strs = map parseFile1 strs

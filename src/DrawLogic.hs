@@ -4,12 +4,16 @@ import Graphics.Gloss.Interface.Pure.Game
 import GraphicInterface
 import Types
 import SolverInterface
+import Data.Time.Clock
+import Data.Time.LocalTime
+import Debug.Trace
+
 
 drawField :: Board -> IO()
 drawField brd = do
   play (display brd) bgColor fps (initGame brd) drawGame handleGame updateGame
      where
-        display board = InWindow "Японские сканворды" ((screenWidth board), (screenHeight board)) (100, 100)
+        display board = InWindow "Японские сканворды" ((screenWidth board + 11*cellSize), (screenHeight board)) (100, 100)
         bgColor = white       -- цвет фона
         fps = 60              -- кол-во кадров в секунду
         initGame board = board   
@@ -28,11 +32,18 @@ handleGame _ brd = brd
 placeMark :: (Int, Int) -> Board -> Mark -> Board
 placeMark (i, j) brd m =
   case modifyArr j (modifyList i place) (field brd) of
-      Nothing -> brd -- если поставить фишку нельзя, ничего не изменится
+      Nothing -> (checkOnBut (i, j) brd) -- если поставить фишку нельзя, ничего не изменится
       Just newBoard -> brd { field  = newBoard }
   where
     place Nothing = Just m
     place _  = Nothing
+    
+checkOnBut :: (Int, Int) -> Board -> Board
+checkOnBut (i, j) brd | (trace ((show sw) ++ "   " ++ (show sh) ++ "   " ++ (show i) ++ "   " ++ (show j))((j>= sh-5) && (j<=sh-2) && (i<=sw+5) && (i>=sw + 2))) = startSolver brd
+                      | otherwise = brd
+  where 
+    sw = fromIntegral(fieldWidth brd)
+    sh = fromIntegral((screenSpace brd) + (fieldHeight brd))
     
 -- | Закрасить клетку (реакция на движение кнопки мыши).
 placeMarkY :: (Int, Int) -> Bool -> Board -> Board

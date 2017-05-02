@@ -1,5 +1,9 @@
 module Types where
 
+import Data.Time.Clock
+import Data.Time.LocalTime
+
+
 -- | Основная структура данных - игровое поле.
 data Board = Board 
     { field :: [[Cell]] -- игровые клетки
@@ -9,6 +13,7 @@ data Board = Board
     , fieldHeight :: Int -- высота игрового поля в клетках
     , buttonPressed :: Bool -- зажата ли левая кнопка мыши
     , difficulty :: Maybe Int --сложность (можно определить с помощью авторешателя)
+  --  , startTime :: TimeOfDay -- время начала решения
     }
 
 -- | Фишки игроков.
