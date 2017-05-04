@@ -20,10 +20,21 @@ autoSolve brd | ((changed new_brd) == False) || (isSolved (field (playBoard new_
     where
       new_brd = checkCols 0 (checkRows 0 brd)
 
+-- | Возвращает головоломку с определённой сложностью.
 countDifficulty :: SolveBoard -> Board
 countDifficulty brd | (difficulty (playBoard brd)) /= Nothing = (playBoard brd) 
                     | (changed brd) == False = (playBoard brd){difficulty = Nothing}
-                    | otherwise = (playBoard brd){difficulty = Just (solvingSteps brd)}
+                    | otherwise = (playBoard brd){difficulty = Just (rateGame (solvingSteps brd) (playBoard brd))}
+
+-- | Оценка сложности игры (количество звёздочек из трёх).                    
+rateGame :: Int -> Board ->Int
+rateGame n brd | prcnt < 27 = 1
+               | prcnt > 72 = 3
+               | otherwise = 2
+    where
+      size = max (fieldWidth brd) (fieldHeight brd)
+      prcnt = n * 100 `div` size
+
 
 -- | Проверка, всё ли поле заполнено.
 isSolved :: [[Cell]] -> Bool
