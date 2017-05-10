@@ -1,8 +1,8 @@
 module FileInput(readFromFile) where
 
 import Types
-import Data.Time.Clock
-import Data.Time.LocalTime
+--import Data.Time.Clock
+--import Data.Time.LocalTime
 
 -- | Функция, создающая игровое поле по содержимому файла.       
 readFromFile :: String -> Board

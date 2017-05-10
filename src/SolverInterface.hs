@@ -6,8 +6,8 @@ import Types
 -- | Запуск автоматического решателя.
 startSolver :: Board -> Board
 startSolver brd = autoSolve (SolveBoard { playBoard = brd
-                                        , changed = False
-                                        , solvingSteps = 1
+                                        , solvingSteps = 0
+                                        , linesSeen = 0
                                         })
 -- | Определение сложности головоломки.
 -- Если головоломка нерешаема, функция вернет Nothing.

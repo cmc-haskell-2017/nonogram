@@ -1,8 +1,8 @@
 module DotInput where 
 
 import Types
-import Data.Time.Clock
-import Data.Time.LocalTime
+--import Data.Time.Clock
+--import Data.Time.LocalTime
 
 
 -- | Основная функция, переводящая псевдографический файл в игровое поле.
@@ -32,7 +32,7 @@ getStrings strs = map parseFile1 strs
 
 -- | Перевод одной строки в список чисел. 
 parseFile1 :: String -> [Int]
-parseFile1 str = map length (filter (\x -> head x == 'x')(filter (\x -> x /= [])(group str))) 
+parseFile1 str = map length (filter (\x -> head x == '#')(filter (\x -> x /= [])(group str))) 
 
 -- | Группировка одинаковых элементов.
 group :: Eq a => [a] -> [[a]]

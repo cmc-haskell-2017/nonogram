@@ -1,7 +1,7 @@
 module Types where
 
-import Data.Time.Clock
-import Data.Time.LocalTime
+--import Data.Time.Clock
+--import Data.Time.LocalTime
 
 
 -- | Основная структура данных - игровое поле.

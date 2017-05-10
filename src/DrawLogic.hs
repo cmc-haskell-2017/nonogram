@@ -4,8 +4,8 @@ import Graphics.Gloss.Interface.Pure.Game
 import GraphicInterface
 import Types
 import SolverInterface
-import Data.Time.Clock
-import Data.Time.LocalTime
+--import Data.Time.Clock
+--import Data.Time.LocalTime
 import Debug.Trace
 
 

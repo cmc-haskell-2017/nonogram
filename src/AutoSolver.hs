@@ -7,33 +7,30 @@ type Line = ([Int], [Cell])
 
 data SolveBoard = SolveBoard
     { playBoard :: Board
-    , changed :: Bool
-    ,solvingSteps :: Int
+    , solvingSteps :: Int
+    , linesSeen :: Int
     }
+
 
 -- | Функция решателя, работающая, пока все клетки не будут заполнены и пока её раота изменяет хоть что-то.
 autoSolve :: SolveBoard -> Board
-autoSolve brd | ((changed new_brd) == False) || (isSolved (field (playBoard new_brd))) = countDifficulty new_brd
-              | otherwise = autoSolve new_brd { solvingSteps = (solvingSteps new_brd) + 1
-                                               , changed = False
-                                               }
-    where
-      new_brd = checkCols 0 (checkRows 0 brd)
+autoSolve brd = countDifficulty (checkRows [0..(fieldWidth (playBoard brd))] brd)
 
 -- | Возвращает головоломку с определённой сложностью.
 countDifficulty :: SolveBoard -> Board
 countDifficulty brd | (difficulty (playBoard brd)) /= Nothing = (playBoard brd) 
-                    | (changed brd) == False = (playBoard brd){difficulty = Nothing}
-                    | otherwise = (playBoard brd){difficulty = Just (rateGame (solvingSteps brd) (playBoard brd))}
+                    | (isSolved (field (playBoard brd))) == False = (playBoard brd){difficulty = Nothing}
+                    | otherwise = (playBoard brd){difficulty = Just (rateGame (solvingSteps brd) (linesSeen brd) (playBoard brd))}
 
 -- | Оценка сложности игры (количество звёздочек из трёх).                    
-rateGame :: Int -> Board ->Int
-rateGame n brd | prcnt < 27 = 1
-               | prcnt > 72 = 3
-               | otherwise = 2
+rateGame :: Int -> Int -> Board -> Int
+rateGame n s brd | prcnt < 20 = 1
+                 | prcnt > 32 = 3
+                 | otherwise = 2
     where
-      size = max (fieldWidth brd) (fieldHeight brd)
-      prcnt = n * 100 `div` size
+      size = (fieldWidth brd) * (fieldHeight brd) -- отношение количества изменений столбцов/строк к общему количеству клеток также определяет сложность
+      lng = max (fieldWidth brd) (fieldHeight brd) -- чем больше головоломка, тем она труднее
+      prcnt = (60 - n * 60 `div` s) + n * 20 `div` size + lng `div` 10 -- первое слагаемое - отношение количества изменений в линиях к количеству просмотренных линий
 
 
 -- | Проверка, всё ли поле заполнено.
@@ -49,25 +46,34 @@ rowFin [] = True
 rowFin (x:xs) | (x == Nothing) = False
               | otherwise = rowFin xs
 
--- | Обработка всех строк, начиная с заданного номера.
-checkRows :: Int -> SolveBoard -> SolveBoard
-checkRows n brd | (n < (fieldHeight (playBoard brd))) = checkRows (n+1) (checkRow n brd)
-                | otherwise = brd
-                
+
+-- | Обработка всех строк из списка.
+checkRows :: [Int] -> SolveBoard -> SolveBoard
+checkRows [] brd = brd
+checkRows (x:xs) brd = checkRows xs (checkRow x brd)
+        
 -- | Обработка строки с заданным номером.
 checkRow :: Int -> SolveBoard -> SolveBoard
-checkRow n brd = placeRow brd (makeMask ns ls) n
+checkRow n brd | (rowFin ls) = brd
+               | otherwise = placeRow brd (makeMask ns ls) n
     where
       (ns, ls) = getRow (playBoard brd) n
 
--- | Обработка всех столбцов, начиная с заданного номера.
-checkCols :: Int -> SolveBoard -> SolveBoard
-checkCols n brd | (n < (fieldWidth (playBoard brd))) = checkCols (n+1) (checkCol n brd)
-                | otherwise = brd
+-- | Обработка всех столбцов из списка.
+checkCols :: [Int] -> SolveBoard -> SolveBoard
+checkCols [] brd = brd
+checkCols (x:xs) brd = checkCols xs (checkCol x brd)
+
+-- | Получение списка измененных клеток в линии.
+cellsChanged :: Int -> [Cell] -> [Cell] -> [Int] -> [Int]
+cellsChanged _ [] [] l = l
+cellsChanged n (x:xs) (y:ys) l | (eqCell x y) = cellsChanged (n+1) xs ys l
+                               | otherwise = cellsChanged (n+1) xs ys (n:l)
 
 -- | Обработка стобца с заданным номером.
 checkCol :: Int -> SolveBoard -> SolveBoard
-checkCol n brd = placeCol brd (makeMask ns ls) n
+checkCol n brd | (rowFin ls) = brd
+               | otherwise = placeCol brd (makeMask ns ls) n
     where
       (ns, ls) = getCol fld{vertical = reverse (vertical fld)} n
         where
@@ -75,42 +81,43 @@ checkCol n brd = placeCol brd (makeMask ns ls) n
 
 -- | Изменение строки с заданным номером, если необходимо.
 placeRow :: SolveBoard -> Maybe [Cell] -> Int -> SolveBoard
-placeRow brd m n | (eqLine cs m) = brd
-                 | otherwise = brd { playBoard = fld{field = putRow (field fld) m n}
-                                   , changed = True}
+placeRow brd Nothing _ = brd
+placeRow brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
+                        | otherwise = checkCols (cellsChanged 0 cs m []) (brd { playBoard = fld{field = putRow (field fld) m n}
+                                                                       , solvingSteps = (solvingSteps brd) + 1
+                                                                       , linesSeen = (linesSeen brd) + 1})
     where
       (_, cs) = getRow fld n
       fld = playBoard brd
 
 -- | Добавление измененной строки к полю.
-putRow :: [[Cell]] -> Maybe [Cell] -> Int -> [[Cell]]
-putRow f Nothing _ = f
-putRow f (Just l) 0 = l : (tail f)
+putRow :: [[Cell]] -> [Cell] -> Int -> [[Cell]]
+putRow f l 0 = l : (tail f)
 putRow f m n = (head f) : (putRow (tail f) m (n-1))                   
 
 -- | Изменение столбца с заданным номером, если необходимо.
 placeCol :: SolveBoard -> Maybe [Cell] -> Int -> SolveBoard
-placeCol brd m n | (eqLine cs m) = brd
-                 | otherwise = brd { playBoard = fld{field = putCol (field fld) m n}
-                                   , changed = True}
+placeCol brd Nothing _ = brd
+placeCol brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
+                        | otherwise = checkRows (cellsChanged 0 cs m []) (brd { playBoard = fld{field = putCol (field fld) m n}
+                                                                     , solvingSteps = (solvingSteps brd) + 1
+                                                                     , linesSeen = (linesSeen brd) + 1})
     where
       (_, cs) = getCol fld n
       fld = playBoard brd
                  
 -- | Добавление измененного столбца к полю.
-putCol :: [[Cell]] -> Maybe [Cell] -> Int -> [[Cell]]
-putCol f Nothing _ = f
+putCol :: [[Cell]] -> [Cell] -> Int -> [[Cell]]
 putCol [[]] _ _ = [[]]
-putCol f (Just l) 0 = putFirst l (getTail f)
+putCol f l 0 = putFirst l (getTail f)
 putCol f m n = putFirst (getFirst f) (putCol (getTail f) m (n-1))
 
 -- | Проверка на равенство маски и ряда.
-eqLine :: [Cell] -> Maybe [Cell] -> Bool
-eqLine _ Nothing = True
-eqLine [] (Just []) = True
-eqLine (x:[]) (Just (y:_)) = (eqCell x y)
-eqLine (x:xs) (Just (y:ys)) | (eqCell x y) = eqLine xs (Just ys)
-                            | otherwise = False
+eqLine :: [Cell] -> [Cell] -> Bool
+eqLine [] [] = True
+eqLine (x:[]) (y:_) = (eqCell x y)
+eqLine (x:xs) (y:ys) | (eqCell x y) = eqLine xs ys
+                     | otherwise = False
                             
 -- | Проверка клеток на равенство.
 eqCell :: Cell -> Cell -> Bool  

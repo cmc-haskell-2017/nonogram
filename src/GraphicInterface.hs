@@ -16,7 +16,7 @@ defaultGame = Board
 
 -- | Размер одной клетки в пикселях.
 cellSize :: Int
-cellSize = 35
+cellSize = 20
 
 -- | Отступ от края.
 screenSpace :: Board -> Int 
