@@ -24,7 +24,7 @@ handleGame (EventKey (MouseButton LeftButton) Down _ mouse) brd = (placeMark (mo
 handleGame (EventKey (MouseButton LeftButton) Up _ _) brd = brd {buttonPressed = False}
 handleGame (EventMotion mouse) brd = placeMarkY (mouseToCoord mouse brd) (buttonPressed brd) brd
 handleGame (EventKey (MouseButton RightButton) Down _ mouse) brd = placeMark (mouseToCoord mouse brd) brd N
-handleGame (EventKey (SpecialKey KeySpace) Down _ _) brd = startSolver brd
+handleGame (EventKey (SpecialKey KeySpace) Down _ _) brd = startSolver1 brd
 handleGame _ brd = brd
 
 
@@ -32,14 +32,15 @@ handleGame _ brd = brd
 placeMark :: (Int, Int) -> Board -> Mark -> Board
 placeMark (i, j) brd m =
   case modifyArr j (modifyList i place) (field brd) of
-      Nothing -> (checkOnBut (i, j) brd) -- если поставить фишку нельзя, ничего не изменится
+      Nothing -> (checkOnBut (i, j) brd) -- если поставить фишку нельзя, проверяем, не на кнопке ли
       Just newBoard -> brd { field  = newBoard }
   where
     place Nothing = Just m
     place _  = Nothing
     
+-- | Проверка, не нажата ли кнопка.
 checkOnBut :: (Int, Int) -> Board -> Board
-checkOnBut (i, j) brd | (trace ((show sw) ++ "   " ++ (show sh) ++ "   " ++ (show i) ++ "   " ++ (show j))((j>= sh-5) && (j<=sh-2) && (i<=sw+5) && (i>=sw + 2))) = startSolver brd
+checkOnBut (i, j) brd | ((j>= sh-5) && (j<=sh-2) && (i<=sw+5) && (i>=sw + 2)) = startSolver brd
                       | otherwise = brd
   where 
     sw = fromIntegral(fieldWidth brd)

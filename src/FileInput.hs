@@ -14,6 +14,9 @@ readFromFile st = Board
     , field = replicate x (replicate y Nothing)
     , buttonPressed = False
     , difficulty = Nothing
+    , colsToSee = []
+    , rowsToSee = []
+    , showMenu = False
 --    , startTime = getTime    
     }
       where

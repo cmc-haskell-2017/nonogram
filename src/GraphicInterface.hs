@@ -16,7 +16,7 @@ defaultGame = Board
 
 -- | Размер одной клетки в пикселях.
 cellSize :: Int
-cellSize = 20
+cellSize = 22
 
 -- | Отступ от края.
 screenSpace :: Board -> Int 
@@ -46,6 +46,7 @@ drawGame board = translate (-w) (-h) (scale c c (pictures
     w = fromIntegral (screenWidth board)  / 2
     h = fromIntegral (screenHeight board) / 2
 
+-- | 
 drawMenu :: Board -> Picture
 drawMenu board = color black (pictures 
   [ line [(sw+2, sh-2), (sw+5, sh-2)]

@@ -16,6 +16,17 @@ data SolveBoard = SolveBoard
 autoSolve :: SolveBoard -> Board
 autoSolve brd = countDifficulty (checkRows [0..(fieldWidth (playBoard brd))] brd)
 
+-- | Функция решателя, работающая, пока все клетки не будут заполнены и пока её раота изменяет хоть что-то.
+autoSolve1 :: SolveBoard -> Board
+autoSolve1 brd | r /= [] = (playBoard (checkRows1 r brd))
+              | c /= [] = (playBoard (checkCols1 c brd))
+              | otherwise = countDifficulty (checkRows1 [0..(fieldHeight fld)-1] brd{playBoard = fld{rowsToSee = [0..(fieldHeight fld)-1]}})
+  where
+    r = (rowsToSee (playBoard brd))
+    c = (colsToSee (playBoard brd))
+    fld = playBoard brd
+    
+
 -- | Возвращает головоломку с определённой сложностью.
 countDifficulty :: SolveBoard -> Board
 countDifficulty brd | (difficulty (playBoard brd)) /= Nothing = (playBoard brd) 
@@ -50,19 +61,39 @@ rowFin (x:xs) | (x == Nothing) = False
 -- | Обработка всех строк из списка.
 checkRows :: [Int] -> SolveBoard -> SolveBoard
 checkRows [] brd = brd
-checkRows (x:xs) brd = checkRows xs (checkRow x brd)
+checkRows (x:xs) brd = checkRows xs (checkRow x True brd)
+
+
+-- | Обработка всех строк из списка.
+checkRows1 :: [Int] -> SolveBoard -> SolveBoard
+checkRows1 [] brd = brd
+checkRows1 (x:xs) brd | (solvingSteps n_brd) == 0 = checkRows1 xs n_brd
+                      | otherwise = n_brd
+  where 
+    fld = playBoard brd
+    n_brd = (checkRow x False brd{playBoard = fld{rowsToSee = xs}})
         
 -- | Обработка строки с заданным номером.
-checkRow :: Int -> SolveBoard -> SolveBoard
-checkRow n brd | (rowFin ls) = brd
-               | otherwise = placeRow brd (makeMask ns ls) n
+checkRow :: Int -> Bool -> SolveBoard -> SolveBoard
+checkRow n b brd | (rowFin ls) = brd
+                 | b == True = placeRow brd (makeMask ns ls) n
+                 | otherwise = placeRow1 brd (makeMask ns ls) n
     where
       (ns, ls) = getRow (playBoard brd) n
 
 -- | Обработка всех столбцов из списка.
 checkCols :: [Int] -> SolveBoard -> SolveBoard
 checkCols [] brd = brd
-checkCols (x:xs) brd = checkCols xs (checkCol x brd)
+checkCols (x:xs) brd = checkCols xs (checkCol x True brd)
+
+-- | Обработка всех столбцов из списка.
+checkCols1 :: [Int] -> SolveBoard -> SolveBoard
+checkCols1 [] brd = brd
+checkCols1 (x:xs) brd | (solvingSteps n_brd) == 0 = checkCols1 xs n_brd
+                      | otherwise = n_brd
+  where 
+    fld = playBoard brd
+    n_brd = (checkCol x False brd{playBoard = fld{colsToSee = xs}})
 
 -- | Получение списка измененных клеток в линии.
 cellsChanged :: Int -> [Cell] -> [Cell] -> [Int] -> [Int]
@@ -71,9 +102,10 @@ cellsChanged n (x:xs) (y:ys) l | (eqCell x y) = cellsChanged (n+1) xs ys l
                                | otherwise = cellsChanged (n+1) xs ys (n:l)
 
 -- | Обработка стобца с заданным номером.
-checkCol :: Int -> SolveBoard -> SolveBoard
-checkCol n brd | (rowFin ls) = brd
-               | otherwise = placeCol brd (makeMask ns ls) n
+checkCol :: Int -> Bool -> SolveBoard -> SolveBoard
+checkCol n b brd | (rowFin ls) = brd
+                 | b == True = placeCol brd (makeMask ns ls) n
+                 | otherwise = placeCol1 brd (makeMask ns ls) n
     where
       (ns, ls) = getCol fld{vertical = reverse (vertical fld)} n
         where
@@ -89,11 +121,26 @@ placeRow brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
     where
       (_, cs) = getRow fld n
       fld = playBoard brd
+      
+
+-- | Изменение строки с заданным номером, если необходимо.
+placeRow1 :: SolveBoard -> Maybe [Cell] -> Int -> SolveBoard
+placeRow1 brd Nothing _ = brd
+placeRow1 brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
+                         | otherwise = brd { playBoard = fld{ field = putRow (field fld) m n
+                                                           , colsToSee =  (l ++ (cellsChanged 0 cs m []))}
+                                          , solvingSteps = (solvingSteps brd) + 1
+                                          , linesSeen = (linesSeen brd) + 1}
+    where
+      (_, cs) = getRow fld n
+      fld = playBoard brd
+      l = (colsToSee fld)
 
 -- | Добавление измененной строки к полю.
 putRow :: [[Cell]] -> [Cell] -> Int -> [[Cell]]
 putRow f l 0 = l : (tail f)
 putRow f m n = (head f) : (putRow (tail f) m (n-1))                   
+
 
 -- | Изменение столбца с заданным номером, если необходимо.
 placeCol :: SolveBoard -> Maybe [Cell] -> Int -> SolveBoard
@@ -105,6 +152,19 @@ placeCol brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
     where
       (_, cs) = getCol fld n
       fld = playBoard brd
+                
+-- | Изменение столбца с заданным номером, если необходимо.
+placeCol1 :: SolveBoard -> Maybe [Cell] -> Int -> SolveBoard
+placeCol1 brd Nothing _ = brd
+placeCol1 brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
+                         | otherwise = brd { playBoard = fld{ field = putCol (field fld) m n
+                                                            , rowsToSee = l ++ (cellsChanged 0 cs m [])}
+                                          , solvingSteps = (solvingSteps brd) + 1
+                                          , linesSeen = (linesSeen brd) + 1}
+    where
+      (_, cs) = getCol fld n
+      fld = playBoard brd
+      l = (rowsToSee fld)
                  
 -- | Добавление измененного столбца к полю.
 putCol :: [[Cell]] -> [Cell] -> Int -> [[Cell]]

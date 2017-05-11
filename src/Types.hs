@@ -13,6 +13,9 @@ data Board = Board
     , fieldHeight :: Int -- высота игрового поля в клетках
     , buttonPressed :: Bool -- зажата ли левая кнопка мыши
     , difficulty :: Maybe Int --сложность (можно определить с помощью авторешателя)
+    , rowsToSee :: [Int]
+    , colsToSee :: [Int]
+    , showMenu :: Bool
   --  , startTime :: TimeOfDay -- время начала решения
     }
 
