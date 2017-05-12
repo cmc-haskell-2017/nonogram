@@ -18,9 +18,10 @@ autoSolve brd = countDifficulty (checkRows [0..(fieldWidth (playBoard brd))] brd
 
 -- | Функция решателя, работающая, пока все клетки не будут заполнены и пока её раота изменяет хоть что-то.
 autoSolve1 :: SolveBoard -> Board
-autoSolve1 brd | r /= [] = (playBoard (checkRows1 r brd))
-              | c /= [] = (playBoard (checkCols1 c brd))
-              | otherwise = countDifficulty (checkRows1 [0..(fieldHeight fld)-1] brd{playBoard = fld{rowsToSee = [0..(fieldHeight fld)-1]}})
+autoSolve1 brd | (rowsNext fld == True) && (r /= []) = (playBoard (checkRows1 r brd))
+               | c /= [] = (playBoard (checkCols1 c brd))
+               | otherwise = countDifficulty (checkRows1 [0..(fieldHeight fld)-1] brd{playBoard = fld{rowsToSee = [0..(fieldHeight fld)-1]
+                                                                                                      , rowsNext = True}})
   where
     r = (rowsToSee (playBoard brd))
     c = (colsToSee (playBoard brd))
@@ -60,7 +61,7 @@ rowFin (x:xs) | (x == Nothing) = False
 
 -- | Обработка всех строк из списка.
 checkRows :: [Int] -> SolveBoard -> SolveBoard
-checkRows [] brd = brd
+checkRows [] brd = brd{playBoard = (playBoard brd){rowsNext = False}}
 checkRows (x:xs) brd = checkRows xs (checkRow x True brd)
 
 
@@ -83,7 +84,7 @@ checkRow n b brd | (rowFin ls) = brd
 
 -- | Обработка всех столбцов из списка.
 checkCols :: [Int] -> SolveBoard -> SolveBoard
-checkCols [] brd = brd
+checkCols [] brd = brd{playBoard = (playBoard brd){rowsNext = True}}
 checkCols (x:xs) brd = checkCols xs (checkCol x True brd)
 
 -- | Обработка всех столбцов из списка.
@@ -128,7 +129,8 @@ placeRow1 :: SolveBoard -> Maybe [Cell] -> Int -> SolveBoard
 placeRow1 brd Nothing _ = brd
 placeRow1 brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
                          | otherwise = brd { playBoard = fld{ field = putRow (field fld) m n
-                                                           , colsToSee =  (l ++ (cellsChanged 0 cs m []))}
+                                                           , colsToSee =  ((cellsChanged 0 cs m []) ++ l)
+                                                           , rowsNext = False}
                                           , solvingSteps = (solvingSteps brd) + 1
                                           , linesSeen = (linesSeen brd) + 1}
     where
@@ -158,7 +160,8 @@ placeCol1 :: SolveBoard -> Maybe [Cell] -> Int -> SolveBoard
 placeCol1 brd Nothing _ = brd
 placeCol1 brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
                          | otherwise = brd { playBoard = fld{ field = putCol (field fld) m n
-                                                            , rowsToSee = l ++ (cellsChanged 0 cs m [])}
+                                                            , rowsToSee = l ++ (cellsChanged 0 cs m [])
+                                                            , rowsNext = True}
                                           , solvingSteps = (solvingSteps brd) + 1
                                           , linesSeen = (linesSeen brd) + 1}
     where
