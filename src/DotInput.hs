@@ -16,19 +16,11 @@ readDotFile str = Board
     , buttonPressed = False
     , difficulty = Nothing
     , colsToSee = []
-    , rowsToSee = []
-    , showMenu = False
---    , startTime = getTime      
+    , rowsToSee = [] 
+    , rowsNext = True  
     }
       where 
         (x, y) = getSize (lines str)
-{-
-getTime :: TimeOfDay
-getTime = do
-    now <- getCurrentTime
-    timezone <- getCurrentTimeZone
-    let (TimeOfDay hour minute second) = localTimeOfDay $ utcToLocalTime timezone now 
--}
 
 getStrings :: [String] -> [[Int]]
 getStrings strs = map parseFile1 strs
@@ -53,19 +45,6 @@ gr (l1, (x:[])) |(head l1) == x = gr(x:l1, [])
 gr (l1, (x:xs)) |(head l1) == x = gr(x:l1, xs)
                 | otherwise = ((reverse l1), (x:xs))
 
-{-
-parseFile :: String -> [Int] -> [Int]
-parseFile [] arr = (reverse arr)
-parseFile str arr | (head str == 'x') = parseFile s1 (a1:arr)
-                  | otherwise = parseFile (tail str) arr
-    where
-      (a1, s1) = cntX (0, str)
-
-
-cntX :: (Int, String) -> (Int, String)
-cntX (n, str) | (head str == 'x') = cntX (n+1, tail str)
-              | otherwise = (n, tail str)
--}
 
 getColumns :: [String] -> [String]
 getColumns ([]:xs) = [[]]

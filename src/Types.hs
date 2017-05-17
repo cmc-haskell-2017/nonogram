@@ -1,7 +1,8 @@
 module Types where
 
---import Data.Time.Clock
---import Data.Time.LocalTime
+import Data.Time.Clock
+import Data.Time.LocalTime
+import Data.Fixed
 
 
 -- | Основная структура данных - игровое поле.
@@ -15,8 +16,7 @@ data Board = Board
     , difficulty :: Maybe Int --сложность (можно определить с помощью авторешателя)
     , rowsToSee :: [Int]
     , colsToSee :: [Int]
-    , showMenu :: Bool
-  --  , startTime :: TimeOfDay -- время начала решения
+    , rowsNext :: Bool
     }
 
 -- | Фишки игроков.

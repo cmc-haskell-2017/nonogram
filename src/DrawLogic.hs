@@ -4,14 +4,11 @@ import Graphics.Gloss.Interface.Pure.Game
 import GraphicInterface
 import Types
 import SolverInterface
---import Data.Time.Clock
---import Data.Time.LocalTime
 import Debug.Trace
-
 
 drawField :: Board -> IO()
 drawField brd = do
-  play (display brd) bgColor fps (initGame brd) drawGame handleGame updateGame
+   play (display brd) bgColor fps (initGame brd) drawGame handleGame updateGame
      where
         display board = InWindow "Японские сканворды" ((screenWidth board + 11*cellSize), (screenHeight board)) (100, 100)
         bgColor = white       -- цвет фона
@@ -26,7 +23,6 @@ handleGame (EventMotion mouse) brd = placeMarkY (mouseToCoord mouse brd) (button
 handleGame (EventKey (MouseButton RightButton) Down _ mouse) brd = placeMark (mouseToCoord mouse brd) brd N
 handleGame (EventKey (SpecialKey KeySpace) Down _ _) brd = startSolver1 brd
 handleGame _ brd = brd
-
 
 -- | Закрасить клетку (реакция на нажатие кнопок мыши).
 placeMark :: (Int, Int) -> Board -> Mark -> Board
