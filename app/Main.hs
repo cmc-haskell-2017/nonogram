@@ -1,18 +1,10 @@
 module Main where
 
 import DrawLogic
-import FileInput
-import DotInput
-import SolverInterface
+import FileInput (readFromFile)
+import DotInput (readDotFile)
 
 main :: IO ()
 main = do
-   src <- readFile "horse_d2.txt"
-{-   putStrLn (dif src)
-     where
-       dif src | getDifficulty (readFromFile src) == Nothing = "Unsolvable"
-               | otherwise = takeDif (getDifficulty (readFromFile src))
-         where
-           takeDif (Just n) = "Difficulty: " ++ (show n)
--}
-   drawField (readFromFile src)
+    src <- readFile "house.txt"
+    drawField (readFromFile src)
