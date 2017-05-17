@@ -1,3 +1,4 @@
+-- | Модуль, предоставляющий графический интерфейс для автоматического ршателя.
 module SolverInterface where
 
 import AutoSolver

@@ -1,9 +1,12 @@
+-- | Модуль, в котором реализован автоматический решатель.
 module AutoSolver where
 
 import Types
 
+-- | Линией назовем кортеж из списка чисел, соответствующих ей, и сапого ряда или столбца игрового поля.
 type Line = ([Int], [Cell])
 
+-- | Новый тип данных для авторешателя.
 data SolveBoard = SolveBoard
     { playBoard :: Board
     , solvingSteps :: Int

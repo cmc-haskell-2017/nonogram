@@ -1,3 +1,4 @@
+-- | Модуль, отвечающий за чтение головоломки из текстового файла.
 module FileInput(readFromFile) where
 
 import Types

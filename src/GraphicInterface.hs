@@ -1,5 +1,5 @@
+-- | Модуль, отвечающий за отрисовку.
 module GraphicInterface where
--- Модуль, отвечающий за отрисовку.
 import Graphics.Gloss.Interface.Pure.Game
 import Types
 

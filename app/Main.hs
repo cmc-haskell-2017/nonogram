@@ -1,8 +1,9 @@
+-- | Основной модуль.
 module Main where
 
 import DrawLogic
 import FileInput (readFromFile)
-import DotInput (readDotFile)
+--import DotInput (readDotFile)
 
 main :: IO ()
 main = do

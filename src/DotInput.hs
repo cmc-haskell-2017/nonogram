@@ -1,3 +1,4 @@
+-- | Модуль, отвечающий за чтение головоломки из псевдографического файла.
 module DotInput where 
 
 import Types
@@ -19,6 +20,7 @@ readDotFile str = Board
       where 
         (x, y) = getSize (lines str)
 
+-- | Перевод списка строк в список списков чисел.
 getStrings :: [String] -> [[Int]]
 getStrings strs = map parseFile1 strs
 
@@ -42,11 +44,12 @@ gr (l1, (x:[])) |(head l1) == x = gr(x:l1, [])
 gr (l1, (x:xs)) |(head l1) == x = gr(x:l1, xs)
                 | otherwise = ((reverse l1), (x:xs))
 
-
+-- | Перевод списка строк в список столбцов.
 getColumns :: [String] -> [String]
 getColumns ([]:_) = [[]]
 getColumns l = (getFirst l):(getColumns (getTail l))
 
+-- | Получение размера игрового поля.
 getSize :: [String] -> (Int, Int)
 getSize [] = (0,0) --не может быть
 getSize (l:ls) = ((length (l:ls)), (length l))

@@ -1,3 +1,4 @@
+-- | Модуль, отвечающий за логику, связанную с рисованием.
 module DrawLogic where
 
 import Graphics.Gloss.Interface.Pure.Game
@@ -5,6 +6,7 @@ import GraphicInterface
 import Types
 import SolverInterface
 
+-- | Главная функция, рисующая игру.
 drawField :: Board -> IO()
 drawField brd = do
    play (display brd) bgColor fps (initGame brd) drawGame handleGame updateGame
