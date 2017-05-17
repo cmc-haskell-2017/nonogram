@@ -26,4 +26,6 @@ stack test
 ```
 stack ghci
 ```
+Для запуска автоматического решателя, воспользуйтесь кнопкой "Autosolver", либо пошагово его можно вызывать с помощью клавиши "Пробел"
 
+![alt text](https://raw.githubusercontent.com/cmc-haskell-2017/nonogram/master/illustration.gif)
