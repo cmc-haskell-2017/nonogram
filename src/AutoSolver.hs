@@ -1,7 +1,6 @@
 module AutoSolver where
 
 import Types
-import Debug.Trace
 
 type Line = ([Int], [Cell])
 
@@ -11,12 +10,11 @@ data SolveBoard = SolveBoard
     , linesSeen :: Int
     }
 
-
 -- | Функция решателя, работающая, пока все клетки не будут заполнены и пока её раота изменяет хоть что-то.
 autoSolve :: SolveBoard -> Board
 autoSolve brd = countDifficulty (checkRows [0..(fieldWidth (playBoard brd))] brd)
 
--- | Функция решателя, работающая, пока все клетки не будут заполнены и пока её раота изменяет хоть что-то.
+-- | Функция пошагового решателя.
 autoSolve1 :: SolveBoard -> Board
 autoSolve1 brd | (rowsNext fld == True) && (r /= []) = (playBoard (checkRows1 r brd))
                | c /= [] = (playBoard (checkCols1 c brd))
@@ -44,7 +42,6 @@ rateGame n s brd | prcnt < 20 = 1
       lng = max (fieldWidth brd) (fieldHeight brd) -- чем больше головоломка, тем она труднее
       prcnt = (60 - n * 60 `div` s) + n * 20 `div` size + lng `div` 10 -- первое слагаемое - отношение количества изменений в линиях к количеству просмотренных линий
 
-
 -- | Проверка, всё ли поле заполнено.
 isSolved :: [[Cell]] -> Bool
 isSolved [] = True
@@ -58,14 +55,12 @@ rowFin [] = True
 rowFin (x:xs) | (x == Nothing) = False
               | otherwise = rowFin xs
 
-
 -- | Обработка всех строк из списка.
 checkRows :: [Int] -> SolveBoard -> SolveBoard
 checkRows [] brd = brd{playBoard = (playBoard brd){rowsNext = False}}
 checkRows (x:xs) brd = checkRows xs (checkRow x True brd)
 
-
--- | Обработка всех строк из списка.
+-- | Обработка всех строк из списка(для пошагового решателя).
 checkRows1 :: [Int] -> SolveBoard -> SolveBoard
 checkRows1 [] brd = brd
 checkRows1 (x:xs) brd | (solvingSteps n_brd) == 0 = checkRows1 xs n_brd
@@ -87,7 +82,7 @@ checkCols :: [Int] -> SolveBoard -> SolveBoard
 checkCols [] brd = brd{playBoard = (playBoard brd){rowsNext = True}}
 checkCols (x:xs) brd = checkCols xs (checkCol x True brd)
 
--- | Обработка всех столбцов из списка.
+-- | Обработка всех столбцов из списка(для пошагового решателя).
 checkCols1 :: [Int] -> SolveBoard -> SolveBoard
 checkCols1 [] brd = brd
 checkCols1 (x:xs) brd | (solvingSteps n_brd) == 0 = checkCols1 xs n_brd
@@ -101,6 +96,7 @@ cellsChanged :: Int -> [Cell] -> [Cell] -> [Int] -> [Int]
 cellsChanged _ [] [] l = l
 cellsChanged n (x:xs) (y:ys) l | (eqCell x y) = cellsChanged (n+1) xs ys l
                                | otherwise = cellsChanged (n+1) xs ys (n:l)
+cellsChanged _ _ _ l = l --не может быть
 
 -- | Обработка стобца с заданным номером.
 checkCol :: Int -> Bool -> SolveBoard -> SolveBoard
@@ -124,7 +120,7 @@ placeRow brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
       fld = playBoard brd
       
 
--- | Изменение строки с заданным номером, если необходимо.
+-- | Изменение строки с заданным номером, если необходимо(для пошагового решателя).
 placeRow1 :: SolveBoard -> Maybe [Cell] -> Int -> SolveBoard
 placeRow1 brd Nothing _ = brd
 placeRow1 brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
@@ -155,7 +151,7 @@ placeCol brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
       (_, cs) = getCol fld n
       fld = playBoard brd
                 
--- | Изменение столбца с заданным номером, если необходимо.
+-- | Изменение столбца с заданным номером, если необходимо (для пошагового решателя).
 placeCol1 :: SolveBoard -> Maybe [Cell] -> Int -> SolveBoard
 placeCol1 brd Nothing _ = brd
 placeCol1 brd (Just m) n | (eqLine cs m) = brd{linesSeen = (linesSeen brd) + 1}
@@ -181,6 +177,7 @@ eqLine [] [] = True
 eqLine (x:[]) (y:_) = (eqCell x y)
 eqLine (x:xs) (y:ys) | (eqCell x y) = eqLine xs ys
                      | otherwise = False
+eqLine _ _ = False --не может быть
                             
 -- | Проверка клеток на равенство.
 eqCell :: Cell -> Cell -> Bool  

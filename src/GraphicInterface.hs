@@ -2,21 +2,10 @@ module GraphicInterface where
 -- Модуль, отвечающий за отрисовку.
 import Graphics.Gloss.Interface.Pure.Game
 import Types
-import Debug.Trace
-
-{-
-defaultGame = Board
-    { fieldWidth  = 20  
-    , fieldHeight = 10
-    , field = replicate (fieldHeight initGame) (replicate (fieldWidth initGame) Nothing)
-    , horizontal = ([1, 2, 3, 4] : (replicate ((fieldHeight initGame)-1) [6, 7, 8] ))
-    , vertical = replicate (fieldWidth initGame) [1] 
-    }
--}
 
 -- | Размер одной клетки в пикселях.
 cellSize :: Int
-cellSize = 22
+cellSize = 25
 
 -- | Отступ от края.
 screenSpace :: Board -> Int 
@@ -34,6 +23,7 @@ screenHeight brd = cellSize * (fieldHeight brd + screenSpace brd)
 maxLngt :: [[a]] -> Int
 maxLngt lst = maximum (map length lst)
 
+-- | Отрисовка игры.
 drawGame :: Board -> Picture
 drawGame board = translate (-w) (-h) (scale c c (pictures
   [ drawGrid board
@@ -46,7 +36,7 @@ drawGame board = translate (-w) (-h) (scale c c (pictures
     w = fromIntegral (screenWidth board)  / 2
     h = fromIntegral (screenHeight board) / 2
 
--- | 
+-- | Отрисовка меню справа от поля.
 drawMenu :: Board -> Picture
 drawMenu board = color black (pictures 
   [ line [(sw+2, sh-2), (sw+5, sh-2)]
@@ -58,8 +48,6 @@ drawMenu board = color black (pictures
   where
     sw = fromIntegral((screenSpace board) + (fieldWidth board))
     sh = fromIntegral((screenSpace board) + (fieldHeight board))
-    
-
 
 -- | Сетка игрового поля.
 drawGrid :: Board -> Picture
@@ -74,7 +62,7 @@ drawGrid board = color black (pictures (hs ++ vs))
     n = fromIntegral (fieldWidth board + (screenSpace board))
     m = fromIntegral (fieldHeight board + screenSpace board)
 
--- | Нарисовать цифры по краям
+-- | Нарисовать цифры по краям.
 drawNums :: Board -> Picture
 drawNums board = pictures (mappend drawHor drawVert)
   where

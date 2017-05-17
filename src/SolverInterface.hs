@@ -9,7 +9,7 @@ startSolver brd = autoSolve (SolveBoard { playBoard = brd
                                         , solvingSteps = 0
                                         , linesSeen = 0
                                         })
--- | Запуск автоматического решателя.
+-- | Запуск пошагового решателя.
 startSolver1 :: Board -> Board
 startSolver1 brd = autoSolve1 (SolveBoard { playBoard = brd
                                         , solvingSteps = 0

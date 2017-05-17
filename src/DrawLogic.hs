@@ -4,7 +4,6 @@ import Graphics.Gloss.Interface.Pure.Game
 import GraphicInterface
 import Types
 import SolverInterface
-import Debug.Trace
 
 drawField :: Board -> IO()
 drawField brd = do

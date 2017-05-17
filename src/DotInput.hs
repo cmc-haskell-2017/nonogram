@@ -1,9 +1,6 @@
 module DotInput where 
 
 import Types
---import Data.Time.Clock
---import Data.Time.LocalTime
-
 
 -- | Основная функция, переводящая псевдографический файл в игровое поле.
 readDotFile :: String -> Board
@@ -47,10 +44,11 @@ gr (l1, (x:xs)) |(head l1) == x = gr(x:l1, xs)
 
 
 getColumns :: [String] -> [String]
-getColumns ([]:xs) = [[]]
+getColumns ([]:_) = [[]]
 getColumns l = (getFirst l):(getColumns (getTail l))
 
 getSize :: [String] -> (Int, Int)
+getSize [] = (0,0) --не может быть
 getSize (l:ls) = ((length (l:ls)), (length l))
 
 -- | Список из первых элементов всех списков.                                      
